@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmation de commande</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: #2196F3;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .content {
+            padding: 30px;
+        }
+        .order-details, .product-table {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+        .product-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .product-table th, .product-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .product-table th {
+            background: #eee;
+            font-weight: 600;
+        }
+        .total {
+            font-size: 1.2em;
+            font-weight: bold;
+            text-align: right;
+            margin-top: 20px;
+        }
+        .footer {
+            background: #eee;
+            padding: 15px;
+            text-align: center;
+            font-size: 0.9em;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Commande confirmée !</h1>
+    </div>
+    <div class="content">
+        <p>Bonjour <strong th:text="${customerName}">Client</strong>,</p>
+        <p>Merci pour votre commande. Vous trouverez ci-dessous le récapitulatif :</p>
+
+        <div class="order-details">
+            <p><strong>Référence de commande :</strong> <span th:text="${orderReference}"></span></p>
+            <p><strong>Date :</strong> <span th:text="${#dates.format(#dates.createNow(), 'dd/MM/yyyy HH:mm')}"></span></p>
+        </div>
+
+        <div class="product-table">
+            <h3>Articles commandés</h3>
+            <table>
+                <thead>
+                <tr>
+                    <th>Produit</th>
+                    <th>Quantité</th>
+                    <th>Prix unitaire</th>
+                    <th>Total</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="product : ${products}">
+                    <td th:text="${product.name}"></td>
+                    <td th:text="${product.quantity}"></td>
+                    <td th:text="${#numbers.formatDecimal(product.price, 1, 2, 'COMMA')} + ' €'"> </td>
+                    <td th:text="${#numbers.formatDecimal(product.price * product.quantity, 1, 2, 'COMMA')} + ' €'"></td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="total">
+                Total : <span th:text="${#numbers.formatDecimal(totalAmount, 1, 2, 'COMMA')} + ' €'"></span>
+            </div>
+        </div>
+
+        <p>Votre commande sera traitée dans les plus brefs délais.</p>
+        <p>Merci pour votre achat !</p>
+        <p>L'équipe E-commerce</p>
+    </div>
+    <div class="footer">
+        &copy; 2025 E-commerce. Tous droits réservés.
+    </div>
+</div>
+</body>
+</html>

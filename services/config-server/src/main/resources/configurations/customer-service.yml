@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: customer-service
+  data:
+    mongodb:
+      username: root
+      password: password
+      host: localhost
+      port: 27017
+      database: customer-service
+      authentication-database: admin
+keycloak:
+  auth-server-url: http://localhost:9098
+  realm: microservice
+  client-id: microservice-auth
+  client-secret: AFzl9Z8apD0ggbcjilxEWWHMbARF1NIS
+
+  # Endpoints
+  token-uri: ${keycloak.auth-server-url}/realms/${keycloak.realm}/protocol/openid-connect/token
+  logout-uri: ${keycloak.auth-server-url}/realms/${keycloak.realm}/protocol/openid-connect/logout
+  admin-uri: ${keycloak.auth-server-url}/admin/realms/${keycloak.realm}

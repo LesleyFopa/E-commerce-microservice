@@ -1,0 +1,28 @@
+spring:
+  config:
+    import: configserver:http://localhost:8888
+  datasource:
+    url: jdbc:postgresql://localhost:5432/product
+    username: postgres
+    password: password
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  flyway:
+    baseline-on-migrate: true
+    enabled: true
+    baseline-description: "init"
+    baseline-version: 0
+    user: postgres
+    password: password
+  application:
+    name: product-service
+server:
+  port: 8050
+management:
+  tracing:
+    sampling:
+      probability: 1.0

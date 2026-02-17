@@ -1,0 +1,29 @@
+spring:
+  config:
+    import: optional:configserver:http://localhost:8888
+  application:
+    name: payement-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/payment
+    username: postgres
+    password: password
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  kafka:
+    producer:
+      bootstrap-servers: localhost:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.mapping: paymentConfirmation:org.lesley.ecommerce.kafka.PaymentConfirmation
+
+server:
+  port: 8060
+management:
+  tracing:
+    sampling:
+      probability: 1.0

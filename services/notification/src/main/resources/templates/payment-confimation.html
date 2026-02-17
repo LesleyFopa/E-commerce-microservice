@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmation de paiement</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: #4CAF50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .content {
+            padding: 30px;
+        }
+        .details {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+        .details p {
+            margin: 10px 0;
+        }
+        .footer {
+            background: #eee;
+            padding: 15px;
+            text-align: center;
+            font-size: 0.9em;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Paiement confirmé !</h1>
+    </div>
+    <div class="content">
+        <p>Bonjour <strong th:text="${customerName}"></strong>,</p>
+        <p>Nous vous confirmons la réception de votre paiement. Votre commande est maintenant en cours de traitement.</p>
+
+        <div class="details">
+            <p><strong>Référence de commande :</strong> <span th:text="${orderReference}"></span></p>
+            <p><strong>Montant payé :</strong> <span th:text="${#numbers.formatDecimal(amount, 1, 2, 'COMMA')}"></span></p>
+            <p><strong>Date :</strong> <span th:text="${#dates.format(#dates.createNow(), 'dd/MM/yyyy HH:mm')}"></span></p>
+        </div>
+        <table>
+            <th>
+                Produits
+            </th>
+            <tr th:each="product : ${products}">
+                <td th:text="${product.name}"></td>
+                <td th:text="${product.quantity}"></td>
+                <td th:text="${product.price}"></td>
+
+            </tr>
+        </table>
+
+        <p>Merci pour votre confiance !</p>
+        <p>L'équipe E-commerce</p>
+    </div>
+    <div class="footer">
+        &copy; 2025 E-commerce. Tous droits réservés.
+    </div>
+</div>
+</body>
+</html>
