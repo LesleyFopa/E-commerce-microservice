@@ -1,10 +1,7 @@
 package org.lesley.ecommerce.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.lesley.ecommerce.dtos.LoginRequest;
-import org.lesley.ecommerce.dtos.LoginResponse;
-import org.lesley.ecommerce.dtos.LogoutRequest;
-import org.lesley.ecommerce.dtos.RegistrationRequest;
+import org.lesley.ecommerce.dtos.*;
 import org.lesley.ecommerce.service.KeycloakAuthService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,12 +30,8 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public Mono<ResponseEntity<String>> register(@RequestBody RegistrationRequest request) {
-        return authService.registerUser(request)
-                .then(Mono.just(ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully")))
-                .onErrorResume(e -> {
-                    String message = "Registration failed: " + e.getMessage();
-                    return Mono.just(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message));
-                });
+    public ResponseEntity<CustomerResponse> register(@RequestBody RegistrationRequest request) {
+        return new ResponseEntity<>(authService.register(request), HttpStatus.CREATED);
+
     }
 }

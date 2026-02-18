@@ -1,13 +1,23 @@
 package org.lesley.ecommerce.service;
 
+import javax.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.keycloak.admin.client.Keycloak;
+import org.keycloak.representations.idm.CredentialRepresentation;
+import org.keycloak.representations.idm.RoleRepresentation;
+import org.keycloak.representations.idm.UserRepresentation;
+import org.lesley.ecommerce.dtos.CustomerResponse;
 import org.lesley.ecommerce.dtos.LoginRequest;
 import org.lesley.ecommerce.dtos.LoginResponse;
 import org.lesley.ecommerce.dtos.RegistrationRequest;
+import org.lesley.ecommerce.entity.Customer;
+import org.lesley.ecommerce.mapper.CustomerMapper;
+import org.lesley.ecommerce.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -15,12 +25,19 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
+import java.util.Collections;
 import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class KeycloakAuthService {
+
+    private final Keycloak keycloak;
+
+    private final CustomerRepository customerRepository;
+
+    private final CustomerMapper mapper;
 
     private final WebClient webClient;
 
@@ -171,5 +188,60 @@ public class KeycloakAuthService {
                                         });
                             });
                 });
+    }
+
+
+    @Transactional
+    public CustomerResponse register(RegistrationRequest request) {
+
+
+        UserRepresentation keycloakUser = new UserRepresentation();
+        keycloakUser.setUsername(request.getEmail());
+        keycloakUser.setEmail(request.getEmail());
+        keycloakUser.setFirstName(request.getFirstname());
+        keycloakUser.setLastName(request.getLastname());
+        keycloakUser.setEnabled(true);
+        keycloakUser.setEmailVerified(true);
+
+        CredentialRepresentation credential = new CredentialRepresentation();
+        credential.setType(CredentialRepresentation.PASSWORD);
+        credential.setValue(request.getPassword());
+        credential.setTemporary(false);
+        keycloakUser.setCredentials(Collections.singletonList(credential));
+
+        Response response = keycloak.realm(realm).users().create(keycloakUser);
+
+        if (response.getStatus() != 201) {
+            throw new RuntimeException("Failed to create user in Keycloak: " + response.getStatusInfo());
+        }
+
+        String locationHeader = response.getHeaderString("Location");
+        String keycloakId = locationHeader.substring(locationHeader.lastIndexOf('/') + 1);
+
+        RoleRepresentation clientRole = keycloak.realm(realm)
+                .roles()
+                .get("CLIENT")
+                .toRepresentation();
+
+        keycloak.realm(realm)
+                .users()
+                .get(keycloakId)
+                .roles()
+                .realmLevel()
+                .add(Collections.singletonList(clientRole));
+
+        Customer customer = Customer.builder()
+                .keycloakId(keycloakId)
+                .email(request.getEmail())
+                .firstname(request.getFirstname())
+                .lastname(request.getLastname())
+                .address(request.getAddress())
+                .build();
+
+        Customer saveCustomer = customerRepository.save(customer);
+
+
+
+        return mapper.fromCustomer(saveCustomer);
     }
 }

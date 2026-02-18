@@ -49,12 +49,13 @@ public class SecurityConfig {
 
     @Bean
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
+
         return http
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers("/api/v1/public/**").permitAll()
                         .pathMatchers("/api/v1/customers/exits/**").hasRole("admin")
-                        .pathMatchers("/api/v1/customers**").hasAnyRole("client", "admin")
-                        .pathMatchers("/api/v1/orders/**").hasAnyRole("client", "admin")
+                        .pathMatchers("/api/v1/customers**").permitAll()
+                        .pathMatchers("/api/v1/orders/**").permitAll()
                         .pathMatchers("/api/v1/order-lines/**").hasAnyRole("client", "admin")
                         .pathMatchers("/api/v1/products/**").hasAnyRole("client", "admin")
                         .pathMatchers("/api/v1/products/create").hasRole("admin")

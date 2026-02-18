@@ -19,11 +19,11 @@ management:
       probability: 1.0
 keycloak:
   auth-server-url: http://localhost:9098
-  realm: microservice
+  realm: micro-service
   client-id: microservice-auth
   client-secret: AFzl9Z8apD0ggbcjilxEWWHMbARF1NIS
 
   # Endpoints
-  token-uri: ${keycloak.auth-server-url}/realms/${keycloak.realm}/protocol/openid-connect/token
-  logout-uri: ${keycloak.auth-server-url}/realms/${keycloak.realm}/protocol/openid-connect/logout
-  admin-uri: ${keycloak.auth-server-url}/admin/realms/${keycloak.realm}
+  token-uri: ${keycloak.auth-server-url}/realms/micro-service/protocol/openid-connect/token
+  logout-uri: ${keycloak.auth-server-url}/realms/micro-service/protocol/openid-connect/logout
+  admin-uri: ${keycloak.auth-server-url}/admin/realms/micro-service
