@@ -1,0 +1,48 @@
+### Variables de base
+@baseUrl = http://localhost:8222
+@ordersUrl = {{baseUrl}}/api/v1/orders
+@orderLinesUrl = {{baseUrl}}/api/v1/order-lines
+
+### Prérequis : Avoir un client existant et des produits existants
+### Vous devez définir ces variables manuellement après avoir créé un client et des produits
+@customerId = 6991b167c15f8053dfafde20
+@productId1 = 902
+@productId2 = 903
+
+### 1. Créer une commande
+POST {{ordersUrl}}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "reference": "CMD-2025-001",
+  "totalAmount": 1099.97,
+  "paymentMethod": "CREDIT_CARD",
+  "customerId": "{{customerId}}",
+  "products": [
+    {
+      "productId": 902,
+      "quantity": 1
+    },
+    {
+      "productId": 903,
+      "quantity": 2
+    }
+  ]
+}
+
+> {%
+    client.global.set("orderId", response.body);
+%}
+
+### 2. Récupérer toutes les commandes
+GET {{ordersUrl}}
+Authorization: Bearer {{accessToken}}
+
+### 3. Récupérer une commande par ID
+GET {{ordersUrl}}/30
+Authorization: Bearer {{accessToken}}
+
+### 4. Récupérer les lignes d'une commande
+GET {{orderLinesUrl}}/order/30
+Authorization: Bearer {{accessToken}}

@@ -1,7 +1,7 @@
 ### Variables de base
 @baseUrl = http://localhost:8222
 @productsUrl = {{baseUrl}}/api/v1/products
-@categoriesUrl = {{baseUrl}}/api/v1/categories
+@categoriesUrl = {{baseUrl}}/api/v1/products/category
 
 ### 1. Créer une catégorie (nécessite rôle ADMIN)
 POST {{categoriesUrl}}
@@ -14,10 +14,10 @@ Content-Type: application/json
 }
 
 > {%
-    client.global.set("categoryId", response.body.id);
+    client.global.set("categoryId", response.body);
 %}
 
-### 2. Créer un produit (nécessite rôle ADMIN)
+### 2. Créer un premier produit
 POST {{productsUrl}}/create
 Authorization: Bearer {{accessToken}}
 Content-Type: application/json
@@ -27,7 +27,7 @@ Content-Type: application/json
   "description": "Dernier modèle avec écran 6.5 pouces",
   "availableQuantity": 50,
   "price": 699.99,
-  "categoryId": {{categoryId}}
+  "categoryId": 1
 }
 
 > {%
@@ -44,7 +44,7 @@ Content-Type: application/json
   "description": "Casque sans fil avec réduction de bruit",
   "availableQuantity": 30,
   "price": 199.99,
-  "categoryId": {{categoryId}}
+  "categoryId": 1
 }
 
 > {%
@@ -77,4 +77,26 @@ Content-Type: application/json
 
 ### 7. Vérifier les quantités après achat
 GET {{productsUrl}}
+Authorization: Bearer {{accessToken}}
+
+### 8. Récupérer toutes les catégories
+GET {{categoriesUrl}}
+Authorization: Bearer {{accessToken}}
+
+### 9. Récupérer une catégorie par ID
+GET {{categoriesUrl}}/{{categoryId}}
+Authorization: Bearer {{accessToken}}
+
+### 10. Mettre à jour une catégorie
+PUT {{categoriesUrl}}/{{categoryId}}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "Électronique grand public",
+  "description": "Produits électroniques pour le grand public"
+}
+
+### 11. Supprimer une catégorie (Attention: supprime aussi les produits à cause de cascade REMOVE)
+DELETE {{categoriesUrl}}/{{categoryId}}
 Authorization: Bearer {{accessToken}}

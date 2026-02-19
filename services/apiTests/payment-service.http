@@ -1,0 +1,27 @@
+### Variables de base
+@baseUrl = http://localhost:8222
+@paymentsUrl = {{baseUrl}}/api/v1/payments
+
+### Prérequis : Avoir une commande existante (orderId) et un client avec ses informations
+@orderId = 1
+@orderReference = CMD-2025-001
+@customerFirstname = Jean
+@customerLastname = Dupont
+@customerEmail = jean.dupont@example.com
+
+### 1. Créer un paiement
+POST {{paymentsUrl}}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "amount": 1099.97,
+  "paymentMethod": "CREDIT_CARD",
+  "orderId": {{orderId}},
+  "orderReference": "{{orderReference}}",
+  "customer": {
+    "firstname": "{{customerFirstname}}",
+    "lastname": "{{customerLastname}}",
+    "email": "{{customerEmail}}"
+  }
+}
