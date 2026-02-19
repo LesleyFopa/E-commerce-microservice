@@ -1,0 +1,99 @@
+### Variables de base
+@baseUrl = http://localhost:8222
+@authUrl = {{baseUrl}}/api/v1/public
+@customersUrl = {{baseUrl}}/api/v1/customers
+
+### 1. Inscription utilisateur (création dans Keycloak + base de données)
+POST {{authUrl}}/register
+Content-Type: application/json
+
+{
+  "firstname": "Lesley",
+  "lastname": "Dupont",
+  "email": "lesley.dupont@example.com",
+  "password": "password",
+  "address": {
+    "street": "Rue de la Paix",
+    "houseNumber": "10",
+    "zipCode": "75001"
+  }
+}
+
+> {%
+    client.global.set("customerId", response.body.id);
+%}
+
+### 2. Connexion (obtention du token JWT)
+POST {{authUrl}}/login
+Content-Type: application/json
+
+{
+  "username": "lesley.dupont@example.com",
+  "password": "password"
+}
+
+> {%
+    client.global.set("accessToken", response.body.accessToken);
+    client.global.set("refreshToken", response.body.refreshToken);
+%}
+
+### 3. Créer un nouveau client (via l'API customers, nécessite token)
+POST {{customersUrl}}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "firstname": "Marie",
+  "lastname": "Curie",
+  "email": "marie.curie@example.com",
+  "address": {
+    "street": "Rue des Sciences",
+    "houseNumber": "5",
+    "zipCode": "75005"
+  }
+}
+
+> {%
+    client.global.set("customerId2", response.body);
+%}
+
+### 4. Récupérer tous les clients
+GET {{customersUrl}}
+Authorization: Bearer {{accessToken}}
+
+### 5. Récupérer un client par son ID
+GET {{customersUrl}}/{{customerId}}
+Authorization: Bearer {{accessToken}}
+
+### 6. Vérifier l'existence d'un client (attention: endpoint "exits" est une faute de frappe)
+GET {{customersUrl}}/exits/{{customerId}}
+Authorization: Bearer {{accessToken}}
+
+### 7. Mettre à jour un client
+PUT {{customersUrl}}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "id": "{{customerId}}",
+  "firstname": "Jean",
+  "lastname": "Dupont",
+  "email": "jean.dupont@nouveau.com",
+  "address": {
+    "street": "Rue de la Paix",
+    "houseNumber": "10",
+    "zipCode": "75001"
+  }
+}
+
+### 8. Supprimer un client
+DELETE {{customersUrl}}/{{customerId}}
+Authorization: Bearer {{accessToken}}
+
+### 9. Déconnexion (révocation du refresh token)
+POST {{authUrl}}/logout
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refreshToken}}"
+}

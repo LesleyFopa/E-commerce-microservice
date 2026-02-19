@@ -1,11 +1,9 @@
 package org.lesley.ecommerce.controller;
 
 import jakarta.validation.Valid;
-import org.lesley.ecommerce.dtos.ProductPurchaseRequest;
-import org.lesley.ecommerce.dtos.ProductPurchaseResponse;
-import org.lesley.ecommerce.dtos.ProductRequest;
-import org.lesley.ecommerce.dtos.ProductResponse;
+import org.lesley.ecommerce.dtos.*;
 import org.lesley.ecommerce.service.ProductService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +14,7 @@ import java.util.List;
 public class ProductController {
 
     private final ProductService productService;
+
 
     public ProductController(ProductService productService) {
         this.productService = productService;
@@ -44,5 +43,32 @@ public class ProductController {
     @GetMapping
     public ResponseEntity<List<ProductResponse>> findAll() {
         return ResponseEntity.ok(productService.findAll());
+    }
+
+    @PostMapping("/category")
+    public ResponseEntity<Integer> createCategory(@RequestBody @Valid CategoryRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(productService.createCategory(request));
+    }
+
+    @GetMapping("/category/{id}")
+    public ResponseEntity<CategoryResponse> findCategoryById(@PathVariable Integer id) {
+        return ResponseEntity.ok(productService.findCategoryById(id));
+    }
+
+    @GetMapping("/category")
+    public ResponseEntity<List<CategoryResponse>> findCategoryAll() {
+        return ResponseEntity.ok(productService.findCategoryAll());
+    }
+
+    @PutMapping("/category/{id}")
+    public ResponseEntity<Void> updateCategory(@PathVariable Integer id, @RequestBody @Valid CategoryRequest request) {
+        productService.updateCategory(id, request);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteCategory(@PathVariable Integer id) {
+        productService.deleteCategory(id);
+        return ResponseEntity.noContent().build();
     }
 }

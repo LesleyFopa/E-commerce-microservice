@@ -53,13 +53,13 @@ public class SecurityConfig {
         return http
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers("/api/v1/public/**").permitAll()
-                        .pathMatchers("/api/v1/customers/exits/**").hasRole("admin")
-                        .pathMatchers("/api/v1/customers**").permitAll()
-                        .pathMatchers("/api/v1/orders/**").permitAll()
-                        .pathMatchers("/api/v1/order-lines/**").hasAnyRole("client", "admin")
-                        .pathMatchers("/api/v1/products/**").hasAnyRole("client", "admin")
-                        .pathMatchers("/api/v1/products/create").hasRole("admin")
-                        .pathMatchers("/api/v1/payments/**").hasAnyRole("client", "admin")
+                        .pathMatchers("/api/v1/customers/exits/**").hasRole("ADMIN")
+                        .pathMatchers("/api/v1/customers**").hasRole("ADMIN")
+                        .pathMatchers("/api/v1/orders/**").hasAnyRole("CLIENT", "ADMIN")
+                        .pathMatchers("/api/v1/order-lines/**").hasAnyRole("CLIENT", "ADMIN")
+                        .pathMatchers("/api/v1/products/**").hasAnyRole("CLIENT", "ADMIN")
+                        .pathMatchers("/api/v1/products/create").hasRole("ADMIN")
+                        .pathMatchers("/api/v1/payments/**").hasAnyRole("CLIENT", "ADMIN")
                         .anyExchange().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2

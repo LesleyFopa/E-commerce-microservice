@@ -1,0 +1,80 @@
+### Variables de base
+@baseUrl = http://localhost:8222
+@productsUrl = {{baseUrl}}/api/v1/products
+@categoriesUrl = {{baseUrl}}/api/v1/categories
+
+### 1. Créer une catégorie (nécessite rôle ADMIN)
+POST {{categoriesUrl}}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "Électronique",
+  "description": "Produits électroniques"
+}
+
+> {%
+    client.global.set("categoryId", response.body.id);
+%}
+
+### 2. Créer un produit (nécessite rôle ADMIN)
+POST {{productsUrl}}/create
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "Smartphone X",
+  "description": "Dernier modèle avec écran 6.5 pouces",
+  "availableQuantity": 50,
+  "price": 699.99,
+  "categoryId": {{categoryId}}
+}
+
+> {%
+    client.global.set("productId1", response.body);
+%}
+
+### 3. Créer un second produit
+POST {{productsUrl}}/create
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "Casque Audio",
+  "description": "Casque sans fil avec réduction de bruit",
+  "availableQuantity": 30,
+  "price": 199.99,
+  "categoryId": {{categoryId}}
+}
+
+> {%
+    client.global.set("productId2", response.body);
+%}
+
+### 4. Récupérer tous les produits
+GET {{productsUrl}}
+Authorization: Bearer {{accessToken}}
+
+### 5. Récupérer un produit par ID
+GET {{productsUrl}}/{{productId1}}
+Authorization: Bearer {{accessToken}}
+
+### 6. Acheter des produits (purchase)
+POST {{productsUrl}}/purchase
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+[
+  {
+    "productId": {{productId1}},
+    "quantity": 2
+  },
+  {
+    "productId": {{productId2}},
+    "quantity": 1
+  }
+]
+
+### 7. Vérifier les quantités après achat
+GET {{productsUrl}}
+Authorization: Bearer {{accessToken}}

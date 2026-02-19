@@ -2,12 +2,12 @@ package org.lesley.ecommerce.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
-import org.lesley.ecommerce.dtos.ProductPurchaseRequest;
-import org.lesley.ecommerce.dtos.ProductPurchaseResponse;
-import org.lesley.ecommerce.dtos.ProductRequest;
-import org.lesley.ecommerce.dtos.ProductResponse;
+import org.lesley.ecommerce.dtos.*;
+import org.lesley.ecommerce.entity.Category;
 import org.lesley.ecommerce.exception.ProductPurchaseException;
+import org.lesley.ecommerce.mapper.CategoryMapper;
 import org.lesley.ecommerce.mapper.ProductMapper;
+import org.lesley.ecommerce.repository.CategoryRepository;
 import org.lesley.ecommerce.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 
@@ -22,10 +22,14 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
+    private final CategoryRepository categoryRepository;
+    private final CategoryMapper categoryMapper;
 
-    public ProductService(ProductRepository productRepository, ProductMapper productMapper) {
+    public ProductService(ProductRepository productRepository, ProductMapper productMapper, CategoryRepository categoryRepository, CategoryMapper categoryMapper) {
         this.productRepository = productRepository;
         this.productMapper = productMapper;
+        this.categoryRepository = categoryRepository;
+        this.categoryMapper = categoryMapper;
     }
 
     public Integer createProduct( ProductRequest productRequest) {
@@ -74,4 +78,39 @@ public class ProductService {
                 .map(productMapper::toProductResponse)
                 .collect(Collectors.toList());
     }
+
+    public Integer createCategory(CategoryRequest request) {
+        Category category = categoryMapper.toCategory(request);
+        return categoryRepository.save(category).getId();
+    }
+
+    public CategoryResponse findCategoryById(Integer id) {
+        return categoryRepository.findById(id)
+                .map(categoryMapper::fromCategory)
+                .orElseThrow(() -> new EntityNotFoundException("Category not found with id: " + id));
+    }
+
+    public List<CategoryResponse> findCategoryAll() {
+        return categoryRepository.findAll()
+                .stream()
+                .map(categoryMapper::fromCategory)
+                .collect(Collectors.toList());
+    }
+
+    public void updateCategory(Integer id, CategoryRequest request) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Category not found with id: " + id));
+        category.setName(request.name());
+        category.setDescription(request.description());
+        categoryRepository.save(category);
+    }
+
+    public void deleteCategory(Integer id) {
+        if (!categoryRepository.existsById(id)) {
+            throw new EntityNotFoundException("Category not found with id: " + id);
+        }
+        categoryRepository.deleteById(id);
+    }
+
+
 }
