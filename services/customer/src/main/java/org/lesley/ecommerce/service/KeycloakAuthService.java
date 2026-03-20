@@ -34,7 +34,7 @@ import java.util.Map;
 public class KeycloakAuthService {
 
     private final Keycloak keycloak;
-
+ 
     private final CustomerRepository customerRepository;
 
     private final CustomerMapper mapper;

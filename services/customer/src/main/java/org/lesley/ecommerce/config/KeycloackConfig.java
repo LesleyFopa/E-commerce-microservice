@@ -8,8 +8,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class KeycloackConfig {
 
-
-
     @Bean
     public Keycloak keycloak() {
         return KeycloakBuilder.builder()
